@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <time.h>
+#include <sys/time.h>
 
 #define MAX_PACKET_SIZE 1024
 
@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 
     int packet_size = atoi(argv[1]);
     char *ip_address = argv[2];
-    int spacing = atoi(argv[3]);
+    int spacing = atoi(argv[3]); // Time spacing between pairs
     int total_packet_pairs = atoi(argv[4]);
 
     if (packet_size > MAX_PACKET_SIZE) {
@@ -33,52 +33,19 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(8080); // Change port if necessary
+    server_addr.sin_port = htons(8080); // Listen on port 8080
     server_addr.sin_addr.s_addr = inet_addr(ip_address);
 
     char message[MAX_PACKET_SIZE];
-    char temp[5];
-    // for(int i=0;i<4;i++){
-    //     temp[i] = '1';
-    // }  
     for (int i = 0; i < total_packet_pairs; i++) {
-        // First packet
-        memset(message, '0', packet_size-1);
-        message[packet_size-1] = '\0';
-        sprintf(temp,"%04d",2*i+1);
-        memcpy(message,temp,4);
-        // memset(message+2, '1',1);
-        // int packet_number = 2 * i + 1;
-        // int num_digits = 0;
-        // while (packet_number != 0) {
-        //     packet_number /= 10;
-        //     num_digits++;
-        // }
-        // memset(message + num_digits, '0', packet_size - num_digits - 1);
-        // snprintf(message, sizeof(message),"%04d", 2 * i + 1);
-        // snprintf(message, packet_size, "Packet %d", 2 * i + 1);
-        printf("%s",message);
-        int send_status = sendto(sock, message, packet_size, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
-        if (send_status < 0) {
-            perror("Error sending packet 1");
-            return -1;
-        }
+        // Send first packet of the pair
+        snprintf(message, sizeof(message), "Packet %d", 2 * i + 1);
+        sendto(sock, message, packet_size, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
         printf("Sent packet %d to %s\n", 2 * i + 1, ip_address);
 
-        // Second packet
-        // memset(message, 0, packet_size-1);
-        // message[packet_size-1] = '\0';
-        // snprintf(message, sizeof(message),"%04d", 2 * i + 2);
-        // snprintf(message, packet_size, "Packet %d", 2 * i + 2);
-        memset(message, '0', packet_size-1);
-        message[packet_size-1] = '\0';
-        sprintf(temp,"%04d",2*i+2);
-        memcpy(message,temp,4);
-        send_status = sendto(sock, message, packet_size, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
-        if (send_status < 0) {
-            perror("Error sending packet 2");
-            return -1;
-        }
+        // Send second packet of the pair
+        snprintf(message, sizeof(message), "Packet %d", 2 * i + 2);
+        sendto(sock, message, packet_size, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
         printf("Sent packet %d to %s\n", 2 * i + 2, ip_address);
 
         // Sleep for the specified spacing between packet pairs
