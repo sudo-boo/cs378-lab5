@@ -1,61 +1,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <arpa/inet.h>
 #include <unistd.h>
-#include <time.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+
+#define MAX_PACKET_SIZE 1024
 
 int main(int argc, char *argv[]) {
     if (argc != 5) {
-        printf("Usage: %s <packet size in bits> <destination IP> <spacing (ms)> <number of packet-pairs>\n", argv[0]);
-        return 1;
+        printf("Usage: %s <packet_size> <IP> <spacing (ms)> <total_packet_pairs>\n", argv[0]);
+        return -1;
     }
 
-    int packet_size = atoi(argv[1]) / 8;  // Convert bits to bytes
-    char *dest_ip = argv[2];
-    int spacing_ms = atoi(argv[3]);
-    int packet_pairs = atoi(argv[4]);
+    int packet_size = atoi(argv[1]);
+    char *ip_address = argv[2];
+    int spacing = atoi(argv[3]); // Time spacing between pairs
+    int total_packet_pairs = atoi(argv[4]);
 
-    // (a) Create Datagram Socket
-    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd < 0) {
-        perror("Socket creation failed");
-        exit(EXIT_FAILURE);
+    if (packet_size > MAX_PACKET_SIZE) {
+        printf("Error: Packet size exceeds maximum allowed (%d bytes)\n", MAX_PACKET_SIZE);
+        return -1;
     }
 
-    struct sockaddr_in dest_addr;
-    memset(&dest_addr, 0, sizeof(dest_addr));
-    dest_addr.sin_family = AF_INET;
-    dest_addr.sin_port = htons(12345);  // Arbitrary port
-    if (inet_pton(AF_INET, dest_ip, &dest_addr.sin_addr) <= 0) {
-        perror("Invalid address/ Address not supported");
-        exit(EXIT_FAILURE);
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sock < 0) {
+        perror("Error creating socket");
+        return -1;
     }
 
-    char *packet = malloc(packet_size);
+    struct sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(8080); // Listen on port 8080
+    server_addr.sin_addr.s_addr = inet_addr(ip_address);
 
-    for (int i = 1; i <= packet_pairs; i++) {
-        // Prepare the packet with the packet number
-        memset(packet, 0, packet_size);
-        snprintf(packet, packet_size, "%d", i);
+    char message[MAX_PACKET_SIZE];
+    for (int i = 0; i < total_packet_pairs; i++) {
+        // Send first packet of the pair
+        snprintf(message, sizeof(message), "Packet %d", 2 * i + 1);
+        sendto(sock, message, packet_size, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+        printf("Sent packet %d to %s\n", 2 * i + 1, ip_address);
 
-        // (b) Send/write data to the socket
-        if (sendto(sockfd, packet, packet_size, 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) < 0) {
-            perror("Send failed");
-            break;
-        }
+        // Send second packet of the pair
+        snprintf(message, sizeof(message), "Packet %d", 2 * i + 2);
+        sendto(sock, message, packet_size, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+        printf("Sent packet %d to %s\n", 2 * i + 2, ip_address);
 
-        // Send the second packet immediately after the first
-        if (sendto(sockfd, packet, packet_size, 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) < 0) {
-            perror("Send failed");
-            break;
-        }
-
-        // Wait for the specified time before sending the next pair
-        usleep(spacing_ms * 1000);
+        // Sleep for the specified spacing between packet pairs
+        usleep(spacing * 1000); // Convert ms to us
     }
 
-    free(packet);
-    close(sockfd);
+    close(sock);
     return 0;
 }
