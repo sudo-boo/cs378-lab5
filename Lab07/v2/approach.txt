@@ -1,0 +1,26 @@
+Each fwding table will have entries
+	with an expiry too.
+	after each receiving of call to update the table, decrement the expiry by 1, unless its an update to that entry only.
+
+
+prepare_table_packet_function
+	converts unordered_map to vector_of_bytes
+	
+
+do_periodic
+	prepare_table_packets
+	send table packets
+	update the table with the received packets
+	also update the table to remove expired entries
+
+send_packet
+	create header (if non_table_update_packet then proper ip, else its a broadcast)
+	if table_update_packet then broadcast the segment
+	else try to forward to the shortest pathed fwding node
+		if not found, then broadcast.
+
+receive_packet
+	parse_header
+	if the header is of table update, then parse that received table and update own table.
+	else, if the packet received contains data, check if meant for own, if yes, call receive_segment()
+	if not meant for us, then call send to the destination node (call send_packet to do whats it does)

@@ -1,0 +1,9 @@
+MSG 1 5000 testing
+DOWN 3
+MSG 2 3000 testing
+DOWN 1
+MSG 3 4000 testing
+UP 3
+MSG 2 3000 testing
+UP 4
+MSG 2 4000 testing

@@ -1,0 +1,58 @@
+==================================================
+No valid path found for destination 5000, broadcasting packet.
+==================================================
+[34;1m[INFO] [0mTotal packets transmitted = 4
+[34;1m[INFO] [0mTotal packet distance     = 4
+[31;1;5m[ERROR] [0mIdeal packets transmitted = 1
+[31;1;5m[ERROR] [0mIdeal packets distance    = 1
+[31;1;5m[ERROR] [0mSome segment(s) not delivered:
+	At (mac:5) with contents:
+		 testing
+
+[34;1m[INFO] [0mBringing down (mac:3)
+==================================================
+[31;1m[WARNING] [0mNode (mac:3) is down and cannot receive segments
+No valid path found for destination 3000, broadcasting packet.
+==================================================
+[34;1m[INFO] [0mTotal packets transmitted = 4
+[34;1m[INFO] [0mTotal packet distance     = 4
+[31;1;5m[ERROR] [0mIdeal packets transmitted = 0
+[31;1;5m[ERROR] [0mIdeal packets distance    = 0
+[31;1;5m[ERROR] [0mSome segment(s) not delivered:
+	At (mac:3) with contents:
+		 testing
+
+[34;1m[INFO] [0mBringing down (mac:1)
+==================================================
+[31;1m[WARNING] [0mNode (mac:3) is down and cannot send segments
+==================================================
+[34;1m[INFO] [0mTotal packets transmitted = 0
+[34;1m[INFO] [0mTotal packet distance     = 0
+[31;1;5m[ERROR] [0mSome segment(s) not delivered:
+	At (mac:4) with contents:
+		 testing
+
+[34;1m[INFO] [0mBringing up (mac:3)
+==================================================
+No valid path found for destination 3000, broadcasting packet.
+==================================================
+[34;1m[INFO] [0mTotal packets transmitted = 4
+[34;1m[INFO] [0mTotal packet distance     = 4
+[31;1;5m[ERROR] [0mIdeal packets transmitted = 1
+[31;1;5m[ERROR] [0mIdeal packets distance    = 1
+[31;1;5m[ERROR] [0mSome segment(s) not delivered:
+	At (mac:3) with contents:
+		 testing
+
+[34;1m[INFO] [0mBringing up (mac:4)
+==================================================
+No valid path found for destination 4000, broadcasting packet.
+==================================================
+[34;1m[INFO] [0mTotal packets transmitted = 4
+[34;1m[INFO] [0mTotal packet distance     = 4
+[31;1;5m[ERROR] [0mIdeal packets transmitted = 1
+[31;1;5m[ERROR] [0mIdeal packets distance    = 1
+[31;1;5m[ERROR] [0mSome segment(s) not delivered:
+	At (mac:4) with contents:
+		 testing
+
